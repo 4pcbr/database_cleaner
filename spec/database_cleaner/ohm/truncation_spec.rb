@@ -9,16 +9,12 @@ module DatabaseCleaner
     describe Truncation do
 
       before(:all) do
-          # ::MongoMapper.connection = ::Mongo::Connection.new('127.0.0.1')
-          # @test_db = 'database_cleaner_specs'
-          # ::MongoMapper.database = @test_db
         ::Ohm.connect
-        @test_db = Ohm.connection
+        @test_db = ::Ohm.redis
       end
 
       before(:each) do
-        # ::MongoMapper.connection.drop_database(@test_db)
-        Ohm::flush
+        ::Ohm.flush
       end
 
       def ensure_counts(expected_counts)
@@ -33,11 +29,11 @@ module DatabaseCleaner
       end
 
       def create_widget(attrs={})
-        Widget.new({:name => 'some widget'}.merge(attrs)).save!
+        Widget.new({:name => 'some widget'}.merge(attrs)).save
       end
 
       def create_gadget(attrs={})
-        Gadget.new({:name => 'some gadget'}.merge(attrs)).save!
+        Gadget.new({:name => 'some gadget'}.merge(attrs)).save.tap { |o| p o }
       end
 
       it "truncates all collections by default" do
